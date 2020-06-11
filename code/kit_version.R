@@ -1,4 +1,6 @@
 library(haven)
+library(tidyverse)
+library(plm)
 
 # SET UP
 setwd("C:/Users/kitsc/KIT_code_testing/data")
@@ -21,8 +23,18 @@ setwd("C:/Users/kitsc/KIT_code_testing/data")
 ## difference in pixel temperature and polynomial means
 	pixel_meantemp_diff = 20
 
-# IMPORTING DATA
+# REAL COUNTRY-LEVEL TEMP DATA
 
-## Real country-level temperature data
-	data <- read_dta("Europe_temps.dta")
+## importing
+	real_temps <- read_dta("Europe_temps.dta")
+## create country ID
+	real_temps$group <- real_temps %>% group_indices(country) 
+## create count of countries
+	country_count = length(unique(real_temps$group))
+## create mean-temp-by-country variable
 
+	# aggregate(x = real_temps$temp1,             
+ #          by = list(real_temps$group),  
+ #          FUN = mean)
+data = real_temp %>% 
+  dplyr::filter(country== "ALB")
