@@ -74,6 +74,19 @@ library(dplyr)
 	  	
 ##	Generate temperature * long-run average temperature, 
 ##	pixel-level values multiplied and then aggregated to country
-d = d %>%
-	  mutate(interaction_pospixel = (temp1_pospixel1*lrtemp_pospixel1 + temp1_pospixel2*lrtemp_pospixel2)*0.5,
-	  		interaction_negpixel = (temp1_negpixel1*lrtemp_negpixel1 + temp1_negpixel2*lrtemp_negpixel2)*0.5)
+	d = d %>%
+		  mutate(interaction_pospixel = (temp1_pospixel1*lrtemp_pospixel1 + temp1_pospixel2*lrtemp_pospixel2)*0.5,
+		  		interaction_negpixel = (temp1_negpixel1*lrtemp_negpixel1 + temp1_negpixel2*lrtemp_negpixel2)*0.5)
+
+# FUNCTION
+
+## Generate fake outcome data in the case of positively correlated pixel temperatures
+gen_pos_outcome <- 
+	function(d,draw,beta,a,gamma,b,alpha,sd){
+	for i in 1:draw {
+	d = d %>%
+		mutate(outcome_pos_i = beta*a + gamma*b + alpha + sd*rnorm(1))
+}
+}
+
+gen_pos_outcome(d=d,draw=reps,beta=beta,a=d$temp1,gamma=gamma,b=d$interaction_pospixel,alpha=alpha,sd=sd)
