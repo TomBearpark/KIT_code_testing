@@ -78,10 +78,10 @@ library(dplyr)
 		  mutate(interaction_pospixel = (temp1_pospixel1*lrtemp_pospixel1 + temp1_pospixel2*lrtemp_pospixel2)*0.5,
 		  		interaction_negpixel = (temp1_negpixel1*lrtemp_negpixel1 + temp1_negpixel2*lrtemp_negpixel2)*0.5)
 
-# FUNCTION
+# GENERATING FAKE OUTCOMES
 
-## Generate fake outcome data in the case of positively & negatively correlated pixel temperatures
-gen_pos_outcome <- function(d,draws,beta,a,gamma,b_pos,b_neg,alpha,sd) {
+## 	Function to generate fake outcome data in the case of positively & negatively correlated pixel temperatures
+gen_outcomes <- function(d,draws,beta,a,gamma,b_pos,b_neg,alpha,sd) {
   for(i in 1:draws) {
     print(i)
     a = as.character(a)
@@ -95,9 +95,13 @@ gen_pos_outcome <- function(d,draws,beta,a,gamma,b_pos,b_neg,alpha,sd) {
    return(d)
 }
 
-new_d = gen_pos_outcome(d=d,draws=reps,
+##	Run function on our data
+new_d = gen_outcomes(d=d,draws=reps,
 		beta=beta,a='temp1',
 		gamma=gamma,b_pos='interaction_pospixel', b_neg='interaction_negpixel',
 		alpha=alpha,sd=sd)
+
+
+#	SAVE
 
 write.csv(new_d,"C:\\Users\\kitsc\\KIT_code_testing\\data\\kit_output.csv", row.names = TRUE)
