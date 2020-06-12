@@ -80,13 +80,24 @@ library(dplyr)
 
 # FUNCTION
 
-## Generate fake outcome data in the case of positively correlated pixel temperatures
-gen_pos_outcome <- 
-	function(d,draw,beta,a,gamma,b,alpha,sd){
-	for i in 1:draw {
-	d = d %>%
-		mutate(outcome_pos_i = beta*a + gamma*b + alpha + sd*rnorm(1))
-}
+## Generate fake outcome data in the case of positively & negatively correlated pixel temperatures
+gen_pos_outcome <- function(d,draws,beta,a,gamma,b_pos,b_neg,alpha,sd) {
+  for(i in 1:draws) {
+    print(i)
+    a = as.character(a)
+    b_pos = as.character(b_pos)
+    b_neg = as.character(b_neg)
+    ypos = as.character(paste0("outcome_pos_", i))
+    yneg = as.character(paste0("outcome_neg_", i))
+    d[ypos] = beta*d[a] + gamma*d[b_pos] + alpha + sd*rnorm(1)
+    d[yneg] = beta*d[a] + gamma*d[b_neg] + alpha + sd*rnorm(1)
+  }
+   return(d)
 }
 
-gen_pos_outcome(d=d,draw=reps,beta=beta,a=d$temp1,gamma=gamma,b=d$interaction_pospixel,alpha=alpha,sd=sd)
+new_d = gen_pos_outcome(d=d,draws=reps,
+		beta=beta,a='temp1',
+		gamma=gamma,b_pos='interaction_pospixel', b_neg='interaction_negpixel',
+		alpha=alpha,sd=sd)
+
+write.csv(new_d,"C:\\Users\\kitsc\\KIT_code_testing\\data\\kit_output.csv", row.names = TRUE)
