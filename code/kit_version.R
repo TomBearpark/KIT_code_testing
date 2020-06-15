@@ -1,6 +1,6 @@
 # SET UP
 
-setwd("C:/Users/kitsc/KIT_code_testing/data")
+setwd("C:/Users/kitsc/Dropbox/KIT_code_testing")
 library(haven)
 library(tidyverse)
 library(plm)
@@ -29,7 +29,7 @@ pixel_meantemp_diff = 20
 ## REAL COUNTRY-LEVEL TEMP DATA
 
 # importing
-real_temps <- read_dta("Europe_temps.dta")
+real_temps <- read_dta("data/Europe_temps.dta")
 d <- real_temps
 # create country ID
 d %<>% mutate(., group = group_indices(., country))
@@ -83,11 +83,8 @@ d %<>% mutate(interaction_pospixel = (temp1_pospixel1*lrtemp_pospixel1 + temp1_p
 gen_outcomes <- function(d,draws,beta,a,gamma,b_pos,b_neg,alpha,sd) {
   for(i in 1:draws) {
     print(i)
-    a = as.character(a)
-    b_pos = as.character(b_pos)
-    b_neg = as.character(b_neg)
-    ypos = as.character(paste0("outcome_pos_", i))
-    yneg = as.character(paste0("outcome_neg_", i))
+    ypos = as.character(glue("outcome_pos_{i}"))
+    yneg = as.character(glue("outcome_neg_{i}"))
     d[ypos] = beta*d[a] + gamma*d[b_pos] + alpha + sd*rnorm(1)
     d[yneg] = beta*d[a] + gamma*d[b_neg] + alpha + sd*rnorm(1)
   }
@@ -102,4 +99,40 @@ new_d = gen_outcomes(d=d,draws=reps,
 
 # SAVE
 
-write.csv(new_d,"C:/Users/kitsc/Dropbox/KIT_code_testing/data/kit_output.csv", row.names = TRUE)
+write.csv(new_d,"data/kit_output.csv", row.names = TRUE)
+
+# TEST HISTOGRAMS
+
+# R histograms
+
+r_outcomes <- new_d
+
+pdf("rplot.pdf") 
+neg_subset <- subset(r_outcomes, country=="ALB" & year == 1971, 
+                     select =grepl( "outcome_neg" , names(r_outcomes)))
+neg_list <- unlist(as.list(neg_subset), use.names = FALSE)
+hist(neg_list, main = "R: Histogram of Negative Outcomes, Albania 1971", xlab="Neg. Outcome")
+
+pos_subset <- subset(r_outcomes, country=="ALB" & year == 1971, 
+                     select =grepl( "outcome_pos" , names(r_outcomes)))
+pos_list <- unlist(as.list(pos_subset), use.names = FALSE)
+hist(pos_list, main = "R: Histogram of Positive Outcomes, Albania 1971", xlab="Pos. Outcome")
+
+dev.off()
+
+# Stata histograms
+
+stata_outcomes <- read_dta("data/simulated_data_interaction.dta")
+
+pdf("stataplot.pdf") 
+neg_subset <- subset(stata_outcomes, country=="ALB" & year == 1971, 
+                     select =grepl( "outcome_neg" , names(stata_outcomes)))
+neg_list <- unlist(as.list(neg_subset), use.names = FALSE)
+hist(neg_list, main = "Stata: Histogram of Negative Outcomes, Albania 1971", xlab="Neg. Outcome")
+
+pos_subset <- subset(stata_outcomes, country=="ALB" & year == 1971, 
+                     select =grepl( "outcome_pos" , names(stata_outcomes)))
+pos_list <- unlist(as.list(pos_subset), use.names = FALSE)
+hist(pos_list, main = "Stata: Histogram of Positive Outcomes, Albania 1971", xlab="Pos. Outcome")
+
+dev.off()
