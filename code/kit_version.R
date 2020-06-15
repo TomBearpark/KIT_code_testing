@@ -101,38 +101,45 @@ new_d = gen_outcomes(d=d,draws=reps,
 
 write.csv(new_d,"data/kit_output.csv", row.names = TRUE)
 
+
 # TEST HISTOGRAMS
 
-# R histograms
+# function to get values for histogram
+get_values <- function(country, year, data, posneg, kitash){
+	subset <- subset(data, country==country & year == year, 
+                     select =grepl(glue("outcome_{posneg}"), names(data)))
+	values <- as.data.frame(unlist(as.list(subset), use.names = FALSE))
+	names(values) = "value"
+	values = values %>% mutate(kit_or_ashwin = kitash, pos_or_neg = posneg)
+	return(values)
+	}
 
+# function to create histogram 
+plot_hist <- function(data1, data2, country, year, posneg){
+	kit = get_values(country=country, year = year, data= data1, posneg=posneg, kitash="kit")
+	ash = get_values(country=country, year = year, data= data2, posneg=posneg, kitash = "ashwin")
+	plot_df = bind_rows(kit, ash)
+
+	hist = ggplot(data = plot_df) + 
+		geom_histogram(aes(x = value, color = kit_or_ashwin, fill = kit_or_ashwin),
+			bins = 200, alpha = 0.02) + 
+		theme_bw() + 
+		ggtitle(paste0(posneg, "-correlation-", country,"-", year)) +
+		geom_vline(data=plot_df[plot_df$kit_or_ashwin=="kit",], aes(xintercept = median(value), colour = kit_or_ashwin)) +
+		geom_vline(data=plot_df[plot_df$kit_or_ashwin=="ashwin",], aes(xintercept = median(value), colour = kit_or_ashwin))
+	
+	return(hist)
+	}
+
+# get data together
 r_outcomes <- new_d
+stata_outcomes <- read_dta("data/simulated_data_interaction.dta", n_max = 2)
 
-pdf("rplot.pdf") 
-neg_subset <- subset(r_outcomes, country=="ALB" & year == 1971, 
-                     select =grepl( "outcome_neg" , names(r_outcomes)))
-neg_list <- unlist(as.list(neg_subset), use.names = FALSE)
-hist(neg_list, main = "R: Histogram of Negative Outcomes, Albania 1971", xlab="Neg. Outcome")
-
-pos_subset <- subset(r_outcomes, country=="ALB" & year == 1971, 
-                     select =grepl( "outcome_pos" , names(r_outcomes)))
-pos_list <- unlist(as.list(pos_subset), use.names = FALSE)
-hist(pos_list, main = "R: Histogram of Positive Outcomes, Albania 1971", xlab="Pos. Outcome")
-
+# plot histograms
+png('pos.png')
+plot_hist(r_outcomes,stata_outcomes,country="ALB",year=1971,posneg="pos")
 dev.off()
 
-# Stata histograms
-
-stata_outcomes <- read_dta("data/simulated_data_interaction.dta")
-
-pdf("stataplot.pdf") 
-neg_subset <- subset(stata_outcomes, country=="ALB" & year == 1971, 
-                     select =grepl( "outcome_neg" , names(stata_outcomes)))
-neg_list <- unlist(as.list(neg_subset), use.names = FALSE)
-hist(neg_list, main = "Stata: Histogram of Negative Outcomes, Albania 1971", xlab="Neg. Outcome")
-
-pos_subset <- subset(stata_outcomes, country=="ALB" & year == 1971, 
-                     select =grepl( "outcome_pos" , names(stata_outcomes)))
-pos_list <- unlist(as.list(pos_subset), use.names = FALSE)
-hist(pos_list, main = "Stata: Histogram of Positive Outcomes, Albania 1971", xlab="Pos. Outcome")
-
+png('neg.png')
+plot_hist(r_outcomes,stata_outcomes,country="ALB",year=1971,posneg="neg")
 dev.off()
