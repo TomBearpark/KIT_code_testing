@@ -1,3 +1,5 @@
+rm(list = ls())
+
 # SET UP
 
 setwd("C:/Users/kitsc/Dropbox/KIT_code_testing")
@@ -7,6 +9,8 @@ library(plm)
 library(dplyr)
 library(magrittr)
 library(glue)
+library(ggplot2)
+library(readr)
 
 ## DEFINITIONS
 
@@ -102,15 +106,17 @@ new_d = gen_outcomes(d=d,draws=reps,
 write.csv(new_d,"data/kit_output.csv", row.names = TRUE)
 
 
+
 # TEST HISTOGRAMS
 
 # function to get values for histogram
 get_values <- function(country, year, data, posneg, kitash){
-	subset <- subset(data, country==country & year == year, 
-                     select =grepl(glue("outcome_{posneg}"), names(data)))
+	subset <- data %>% 
+    dplyr::filter(country == !!country, year == !!year) %>% 
+    dplyr::select(starts_with(paste0("outcome_", posneg)))
 	values <- as.data.frame(unlist(as.list(subset), use.names = FALSE))
 	names(values) = "value"
-	values = values %>% mutate(kit_or_ashwin = kitash, pos_or_neg = posneg)
+	values = values %>% mutate(kit_or_ashwin = kitash, posneg = posneg)
 	return(values)
 	}
 
@@ -120,26 +126,34 @@ plot_hist <- function(data1, data2, country, year, posneg){
 	ash = get_values(country=country, year = year, data= data2, posneg=posneg, kitash = "ashwin")
 	plot_df = bind_rows(kit, ash)
 
+	print(median(kit$value))
+  	print(median(ash$value))
+
 	hist = ggplot(data = plot_df) + 
-		geom_histogram(aes(x = value, color = kit_or_ashwin, fill = kit_or_ashwin),
-			bins = 200, alpha = 0.02) + 
+		geom_histogram(aes(x = value, color = kit_or_ashwin), alpha = 0.02, 
+			position = "identity", bins = 200) + 
 		theme_bw() + 
 		ggtitle(paste0(posneg, "-correlation-", country,"-", year)) +
-		geom_vline(data=plot_df[plot_df$kit_or_ashwin=="kit",], aes(xintercept = median(value), colour = kit_or_ashwin)) +
-		geom_vline(data=plot_df[plot_df$kit_or_ashwin=="ashwin",], aes(xintercept = median(value), colour = kit_or_ashwin))
+		geom_vline(data=plot_df[plot_df$kit_or_ashwin=="kit",], aes(xintercept = median(value), color = kit_or_ashwin)) +
+		geom_vline(data=plot_df[plot_df$kit_or_ashwin=="ashwin",], aes(xintercept = median(value), color = kit_or_ashwin))
 	
 	return(hist)
 	}
 
 # get data together
-r_outcomes <- new_d
-stata_outcomes <- read_dta("data/simulated_data_interaction.dta", n_max = 2)
+r_outcomes <- read_csv("data/kit_output.csv")
+stata_outcomes <- read_dta("data/simulated_data_interaction.dta")
 
-# plot histograms
-png('pos.png')
-plot_hist(r_outcomes,stata_outcomes,country="ALB",year=1971,posneg="pos")
-dev.off()
+# plot histograms - testing
+pos_alb1971 = plot_hist(r_outcomes,stata_outcomes,country="ALB",year=1971,posneg="pos")
+ggsave("hist_testing/pos_alb1971.png", plot = pos_alb1971)
 
-png('neg.png')
-plot_hist(r_outcomes,stata_outcomes,country="ALB",year=1971,posneg="neg")
-dev.off()
+neg_alb1971 = plot_hist(r_outcomes,stata_outcomes,country="ALB",year=1971,posneg="neg")
+ggsave("hist_testing/neg_alb1971.png", plot = neg_alb1971)
+
+pos_lux1985 = plot_hist(r_outcomes,stata_outcomes,country="LUX",year=1985,posneg="pos")
+ggsave("hist_testing/pos_lux1985.png", plot = pos_lux1985)
+
+neg_lux1985 = plot_hist(r_outcomes,stata_outcomes,country="LUX",year=1985,posneg="neg")
+ggsave("hist_testing/neg_lux1985.png", plot = neg_lux1985)
+
