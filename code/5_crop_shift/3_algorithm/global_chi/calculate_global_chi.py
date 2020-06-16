@@ -88,7 +88,9 @@ chi = pd.concat([pd.Series(s) for s in [isos, chi]], axis=1)
 chi.columns = ['iso', 'chi']
 
 # save out result
-write_dir = ('{}/GCP_Reanalysis/AGRICULTURE/4_outputs/'.format(paths.DB)
-             + '3_projections/5_crop_shift/chi/data')
-os.mkdir(write_dir)
-chi.to_csv('{}/chi_global.csv'.format(write_dir), index=False)
+# commented out for Kit's version so she doesn't save over the previously]
+# generated output!
+# write_dir = ('{}/GCP_Reanalysis/AGRICULTURE/4_outputs/'.format(paths.DB)
+#              + '3_projections/5_crop_shift/chi/data')
+# os.mkdir(write_dir)
+# chi.to_csv('{}/chi_global.csv'.format(write_dir), index=False)
