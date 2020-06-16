@@ -1,0 +1,29 @@
+# Crop Shift
+
+Code written by Simon Greenhill during the strange and often awful spring of 2020. Handing off to Kit Schwarz in June 2020.
+
+The code in this directory implements valuation for the agriculture sector. The reason it is called "crop shift" is because our approach to valuation allows the locations and choice of crops to shift over time. The intuition behind this is that we don't think farmers will continue to plant the same crops in the same places year after year, especially as the planet warms and some crops/places that are currently high-yielding experience yield losses, and other crops/places that are currently low-yield experience yield gains. 
+
+One way to implement this intuition would be to build a full-blown general equilibrium model that allows us to predict and interpret the future distribution of crops. This would be a tremendous amount of work, faces many conceptual difficulties, and is beyond the scope of this project. Instead, our approach involves holding moments capturing key equilibrium features of the spatial allocation of crop locations constant over time. These moments address some of the features that a larger model would capture, such as imperfect substitutability across crops and spatial frictions in the allocation of crops, without modeling them explicitly.
+
+Our preferred approach is to hold constant a single moment, which we call Chi (as in the greek letter). Chi is the ratio of actual calories produced to maximum possible calories produced if crop choice and location in a given region were chosen to maximize caloric production. We calculate the numerator and denominator of this ratio using crop model predictions of crop yields by location in order to have information about potential yields in locations where the crop is not actually grown. 
+
+The purpose of chi is to capture that because crops are not perfectly substitutable and moving them across space is not free, actual production in equilibrium is only some proportion of maximum possible production (if crops were perfectly substitutable and there were no shipping costs, we would expect to see chi = 1). In the future, we want to allow farmers to reallocate their land use decisions in light of shifting productivities by crop and location, but want to capture a realistic level of this reallocation. Instead of allowing crops to be “perfectly" allocated in the future, we allow for an allocation that’s consistent with what we observe in the present equilibrium.
+
+With this goal in mind, we need the following components to calculate chi in each country and ultimately the welfare consequences of climate change:
+1. Data (`1_cleaning/`)
+    - Data on the current global distribution of crops. This is used to calculate chi based on existing crop allocation and identify how much empty arable land exists to be used in calculating the maximum possible yield. We use data from SAGE for this. See `1_cleaning/aggregate_cropped_area/readme.md`.
+    - Data on potential yields globally. This is also used to calculate maximum possible yield. Note that the only information we are using in this data is about the relative agricultural suitability of land within a geographic area, rather than the levels of the potential yields. We use data from GAEZ for this. See `1_cleaning/extract_GAEZ/readme.md`.
+
+1. Predict yield levels in the future (`2_regression/`)
+    - Our impacts projections give us yield changes, but do not identify yield levels. To implement our valuation, we need the initial level in addition to the change. We model this by regressing the ratio of actual yields (obtained at the country level from the FAO) to potential yields (from GAEZ) on a simple functional form of GDP. See `2_regression/potential_yield_ratio_regressions.R`.
+    - **Notes for future work:** We will eventually need to project the results of these regressions. The current plan is to do this separately from the `impact-calculations` repo. See [this git issue](https://gitlab.com/ClimateImpactLab/Impacts/impact-calculations/-/issues/87) for the discussion. For an example of a projection produced outside of `impact-calculations`, see [`gcp-labor/3_projection/employment_shares/project/project_empshares.do`](https://gitlab.com/ClimateImpactLab/Impacts/gcp-labor/-/blob/master/3_projection/employment_shares/project/project_empshares.do). Note that this projection is written in Stata. Though this is fine, it may be preferable to write the projection code in Python so it can more easily be integrated with the projection system later on. Talk to James and Brewster about this.
+
+1. Calculate chi and use it to calculate future yields. Then, calculate welfare changes given the future yields (`3_algorithm/`)
+	- Code in this folder implements various moment calculations and matching moments through time. See `3_algorithm/readme.md` for details.
+	- **Notes for future work**:
+	    - The largest piece of this that still needs to be developed is applying the single-moment matching algorithm globally using outputs from the agriculture sector's impacts projections. There are many steps to finalizing this, most of which fall under expanding the scripts in `3_algorithm/acp_test/` to use global data.
+	    - There are some additional refinements that we might consider adding, including:
+	        - Developing a model of chi using present-day data that allows us to let chi evolve into the future
+
+I hope that most of the information you need to understand and expand this work is contained in this document and the code and documentation it points to. You may also want to look at [my notes](https://paper.dropbox.com/doc/Crop-reallocation-work-plan--A1g57q_ngArw0_6ySLFgbgp0AQ-b9SsTf5IplUtYORglqkaa) from this project, although they are somewhat messy and may not be fully up to date.

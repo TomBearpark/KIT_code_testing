@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="48737257-a781-4918-8e60-33fd7759081a" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../1_cleaning/aggregate_cropped_area/jobs/aggregate_cropped_area_hierid_global.R" beforeDir="false" afterPath="$PROJECT_DIR$/../1_cleaning/aggregate_cropped_area/jobs/aggregate_cropped_area_hierid_global.R" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../1_cleaning/aggregate_cropped_area/scripts/aggregate_cropped_area.R" beforeDir="false" afterPath="$PROJECT_DIR$/../1_cleaning/aggregate_cropped_area/scripts/aggregate_cropped_area.R" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../1_cleaning/extract_gaez/jobs/extract_gaez_hierid_global.R" beforeDir="false" afterPath="$PROJECT_DIR$/../1_cleaning/extract_gaez/jobs/extract_gaez_hierid_global.R" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/global_chi/calculate_global_chi.py" beforeDir="false" afterPath="$PROJECT_DIR$/global_chi/calculate_global_chi.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="ProjectId" id="1aGkzCh8FCzIHNE9gJb0M8A0aIK" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="48737257-a781-4918-8e60-33fd7759081a" name="Default Changelist" comment="" />
+      <created>1586369577587</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1586369577587</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="734" y="185" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1586370231020">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="734" y="185" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1920.1057/109.1103.1680.956@0.23.1920.1057" timestamp="1586370231020" />
+  </component>
+</project>
