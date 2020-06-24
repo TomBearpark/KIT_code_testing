@@ -126,18 +126,29 @@ program define run_polynomial_regressions
 		* otherwise, the point estimates will be different between reg and reghdfe
 		* right now we only need to run interacted regressions with week_adm0 fixed effects
 		* also we don't save response function for the interacted regressions here
-		if "`is_interacted'" == "yes" & "`fe'" == "fe_week_adm0" {
-			
-			* manually generate dummies in place for the fixed effects
-			egen g1 = group(adm3_id high_risk)
-			egen g2 = group(dow_week high_risk)
-			egen g3 = group(adm0_id week_fe high_risk)
-			egen g4 = group(adm0_id year high_risk)
-			* find the observations included in the reghdfe regression
-			gen included = e(sample)
-			tab included
-			run_specification "reg" "`spec_desc'" polynomials_`t_version'_`chn_week'_`data_subset'_`t_version' do_not_include_0_min "`reg_treatment'" "`reg_control'" `treat_risk' diff_cont "i.g1 i.g2 i.g3 i.g4" `weights' `clustering' "`ster_name'" 
+
+		* creating a matrix of standard errors
+		mat A = e(V)
+		local coefs =colsof(A)
+		matrix std_errors = vecdiag(e(V))
+		forvalues i = 1/`coefs' {
+			matrix std_errors[1, `i'] = sqrt(std_errors[1, `i'])
 		}
+		* summing all standard errors
+		mata : st_matrix("sum", rowsum(st_matrix("std_errors")))
+
+		* checking if sum of all standard errors are zero; if so, we run a normal reg.
+		if sum[1,1] == 0 {
+			di "Your standard errors are all zero. Now running a normal reg."
+			* e(sample) isn't working for some reason -- neither with my version or Rae's previous version
+			*gen included = e(sample)
+			local fixed_effects = e(extended_absvars)
+			run_specification "reg" "`spec_desc'" polynomials_`t_version'_`chn_week'_`data_subset'_`t_version' do_not_include_0_min "`reg_treatment'" "`reg_control'" `treat_risk' diff_cont "`fixed_effects'" `weights' `clustering' "`ster_name'" 
+			}
+		else {
+			di "Good job! You have some standard errors from reghdfe. No need to run reg."
+			}
+	
 		restore
 	}
 	else {
