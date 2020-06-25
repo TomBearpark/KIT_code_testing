@@ -111,6 +111,7 @@ program define run_polynomial_regressions
 
 		* run reghdfe by default
 		run_specification "reghdfe" "`spec_desc'" polynomials_`t_version'_`chn_week'_`data_subset' do_not_include_0_min "`reg_treatment'" "`reg_control'" `treat_risk' diff_cont `fe' `weights' `clustering' "`ster_name'" 
+		gen included = e(sample)
 
 		* save the data for regression because new data needs to be generated for the response function
 		tempfile reg_data
@@ -140,8 +141,6 @@ program define run_polynomial_regressions
 		* checking if sum of all standard errors are zero; if so, we run a normal reg.
 		if sum[1,1] == 0 {
 			di "Your standard errors are all zero. Now running a normal reg."
-			* e(sample) isn't working for some reason -- neither with my version or Rae's previous version
-			*gen included = e(sample)
 			local fixed_effects = e(extended_absvars)
 			run_specification "reg" "`spec_desc'" polynomials_`t_version'_`chn_week'_`data_subset'_`t_version' do_not_include_0_min "`reg_treatment'" "`reg_control'" `treat_risk' diff_cont "`fixed_effects'" `weights' `clustering' "`ster_name'" 
 			}
